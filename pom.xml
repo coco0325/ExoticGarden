@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.mrCookieSlime</groupId>
@@ -30,7 +28,7 @@
     <!--Maintain existing structure (as much as possible)-->
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <!--doesn't exist but here if you ever do make such a directory-->
-        <testSourceDirectory>${project.basedir}/tests/java</testSourceDirectory>
+        <testSourceDirectory>${project.basedir}/</testSourceDirectory>
         <testResources>
           <testResource>
             <directory>${project.basedir}/tests/resources</directory>
@@ -62,13 +60,13 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
+            <version>1.13.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
 	        <groupId>com.github.TheBusyBiscuit</groupId>
 	        <artifactId>CS-CoreLib</artifactId>
-	        <version>2e140f829f</version>
+	        <version>v1.6</version>
 	    </dependency>
         <dependency>
 	        <groupId>com.github.TheBusyBiscuit</groupId>
