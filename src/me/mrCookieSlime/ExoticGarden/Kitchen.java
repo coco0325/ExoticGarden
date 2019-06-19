@@ -29,12 +29,12 @@ import me.mrCookieSlime.Slimefun.api.Slimefun;
 
 public class Kitchen {
 
-	public static final RecipeType KITCHEN = new RecipeType(new CustomItem(Material.CAULDRON, "&eKitchen", "", "&a&oThis item should be made", "&a&oin the Kitchen"), "KITCHEN");
+	public static final RecipeType KITCHEN = new RecipeType(new CustomItem(Material.CAULDRON, "&e廚房", "", "&a&o此食物應在", "&a&o廚房內製作"), "KITCHEN");
 
 	public static void registerKitchen(ExoticGarden plugin) {
 
 		new SlimefunMachine(Categories.MACHINES_1, ExoticGarden.KITCHEN, "KITCHEN",
-		new ItemStack[] {new CustomItem(Material.BRICK_STAIRS, "&oBrick Stairs (upside down)", 1), new CustomItem(Material.BRICK_STAIRS, "&oBrick Stairs (upside down)", 1), new ItemStack(Material.BRICKS), new ItemStack(Material.STONE_PRESSURE_PLATE), new ItemStack(Material.IRON_TRAPDOOR), new ItemStack(Material.BOOKSHELF), new ItemStack(Material.FURNACE), new ItemStack(Material.DISPENSER), new ItemStack(Material.CRAFTING_TABLE)},
+		new ItemStack[] {new CustomItem(Material.BRICK_STAIRS, "&o紅磚樓梯(倒著放)", 1), new CustomItem(Material.BRICK_STAIRS, "&o紅磚樓梯(倒著放)", 1), new ItemStack(Material.BRICKS), new ItemStack(Material.STONE_PRESSURE_PLATE), new ItemStack(Material.IRON_TRAPDOOR), new ItemStack(Material.BOOKSHELF), new ItemStack(Material.FURNACE), new ItemStack(Material.DISPENSER), new ItemStack(Material.CRAFTING_TABLE)},
 		new ItemStack[0], Material.IRON_TRAPDOOR)
 		.register(true, new MultiBlockInteractionHandler() {
 			@Override
@@ -108,7 +108,7 @@ public class Kitchen {
 			}
 		});
 
-	    Slimefun.registerResearch(new Research(600, "Kitchen", 30), ExoticGarden.KITCHEN);
+	    Slimefun.registerResearch(new Research(600, "廚房", 30), ExoticGarden.KITCHEN);
 	}
 
 	private static Furnace locateFurnace(Block b) {

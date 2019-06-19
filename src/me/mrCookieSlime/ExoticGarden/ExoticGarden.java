@@ -51,7 +51,7 @@ public class ExoticGarden extends JavaPlugin {
 
 	private static boolean skullitems;
 
-	public static ItemStack KITCHEN = new CustomItem(Material.CAULDRON, "&e下廚", 0, new String[] {"", "&a&o你可以製作好多美味的食物!", "&a&o請在熔爐內製作"});
+	public static ItemStack KITCHEN = new CustomItem(Material.CAULDRON, "&e廚房", 0, new String[] {"", "&a&o你可以製作好多美味的食物!", "&a&o將食材放入廚房內的熔爐"});
 
 	@Override
 	public void onEnable() {
@@ -232,7 +232,7 @@ public class ExoticGarden extends JavaPlugin {
 		new ItemStack[] {getItem("PEACH"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new CustomPotion("&4S草莓冰茶", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&o回復 &b&o" + "6.5" + " &7&o飽食度"), "STRAWBERRY_ICED_TEA", RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(category_drinks, new CustomPotion("&4草莓冰茶", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&o回復 &b&o" + "6.5" + " &7&o飽食度"), "STRAWBERRY_ICED_TEA", RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("STRAWBERRY"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
@@ -549,7 +549,7 @@ public class ExoticGarden extends JavaPlugin {
 		5)
 		.register();
 
-		new Juice(category_drinks, new CustomPotion("&eLemonade", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 8, 0), "", "&7&o回復 &b&o" + "4.0" + " &7&o飽食度"), "LEMONADE", RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(category_drinks, new CustomPotion("&e清新檸檬汁", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 8, 0), "", "&7&o回復 &b&o" + "4.0" + " &7&o飽食度"), "LEMONADE", RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("LEMON_JUICE"), new ItemStack(Material.SUGAR), null, null, null, null, null, null, null})
 		.register();
 
@@ -654,7 +654,7 @@ public class ExoticGarden extends JavaPlugin {
 		.register();
 
 		try {
-			new EGPlant(category_main, new CustomItem(getSkull(material, texture), color + StringUtils.format(fruitName)), fruitName, new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的樹獲得", 0)), true,
+			new EGPlant(category_main, new CustomItem(getSkull(material, texture), color + name), fruitName, new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的樹獲得", 0)), true,
 			new ItemStack[] {null, null, null, null, getItem(fruitName + "_SAPLING"), null, null, null, null})
 			.register();
 		} catch (Exception e1) {
