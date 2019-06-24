@@ -127,7 +127,7 @@ public class Schematic {
 									block.setType(parseId(blocks[index], blockData[index]));
 								}
 								if (org.bukkit.Tag.LEAVES.isTagged(parseId(blocks[index], blockData[index]))) {
-									if (CSCoreLib.randomizer().nextInt(100) < 25) BlockStorage.store(block, tree.getItem());
+									if (CSCoreLib.randomizer().nextInt(100) < 5) BlockStorage.store(block, tree.getItem());
 								}
 								else if (parseId(blocks[index], blockData[index]) == Material.PLAYER_HEAD) {
 									Rotatable s = (Rotatable) block.getBlockData();
