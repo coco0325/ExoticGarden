@@ -10,6 +10,7 @@ import java.util.Map;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -28,7 +29,6 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomPotion;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Player.PlayerInventory;
 import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
-import me.mrCookieSlime.ExoticGarden.CSCoreLibSetup.CSCoreLibLoader;
 import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
@@ -55,8 +55,6 @@ public class ExoticGarden extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CSCoreLibLoader loader = new CSCoreLibLoader(this);
-		if (loader.load()) {
 			if (!new File("plugins/ExoticGarden").exists()) new File("plugins/ExoticGarden").mkdirs();
 	    	if (!new File("plugins/ExoticGarden/schematics").exists()) new File("plugins/ExoticGarden/schematics").mkdirs();
 			PluginUtils utils = new PluginUtils(this);
@@ -149,62 +147,64 @@ public class ExoticGarden extends JavaPlugin {
 
 			final ItemStack grass_seeds = new CustomItem(Material.PUMPKIN_SEEDS, "&r草種子", "", "&7&o可以被種在泥土上");
 
-			final SlimefunItem crook = new SlimefunItem(Categories.TOOLS, new CustomItem(Material.WOODEN_HOE, "&r鐮刀", "", "&7+ &b25% &7水果樹苗掉落率"), "CROOK", RecipeType.ENHANCED_CRAFTING_TABLE,
-			new ItemStack[] {new ItemStack(Material.STICK), new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null});
-			crook.register(false, new BlockBreakHandler() {
-				@Override
-				public boolean onBlockBreak(BlockBreakEvent arg0, ItemStack arg1, int arg2, List<ItemStack> arg3) {
-					if (SlimefunManager.isItemSimiliar(arg1, crook.getItem(), true)) {
-						PlayerInventory.damageItemInHand(arg0.getPlayer());
-						if ((arg0.getBlock().getType().toString().endsWith("LEAVES")) && CSCoreLib.randomizer().nextInt(100) < 25) {
-							ItemStack sapling = new ItemStack(arg0.getBlock().getType());
-							arg3.add(sapling);
-						}
-						return true;
+		final SlimefunItem crook = new SlimefunItem(Categories.TOOLS, new CustomItem(Material.WOODEN_HOE, "&r鐮刀", "", "&7+ &b25% &7種子掉落率"), "CROOK", RecipeType.ENHANCED_CRAFTING_TABLE,
+				new ItemStack[] {new ItemStack(Material.STICK), new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null});
+		crook.register(false, new BlockBreakHandler() {
+			@Override
+			public boolean onBlockBreak(BlockBreakEvent e, ItemStack i, int fortune, List<ItemStack> drops) {
+				if (SlimefunManager.isItemSimiliar(i, crook.getItem(), true)) {
+					PlayerInventory.damageItemInHand(e.getPlayer());
+					if (Tag.LEAVES.isTagged(e.getBlock().getType()) && CSCoreLib.randomizer().nextInt(100) < 25) {
+						ItemStack sapling = new ItemStack(e.getBlock().getType());
+						drops.add(sapling);
 					}
-					return false;
+					return true;
 				}
-			});
-
-			new SlimefunItem(category_main, grass_seeds, "GRASS_SEEDS", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草", 1)),
-			new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
-			.register(false, new ItemInteractionHandler() {
-				@Override
-				public boolean onRightClick(ItemUseEvent arg0, Player arg1, ItemStack arg2) {
-					if (SlimefunManager.isItemSimiliar(arg2, grass_seeds, true)) {
-						if (arg0.getClickedBlock() != null && arg0.getClickedBlock().getType() == Material.DIRT) {
-							PlayerInventory.consumeItemInHand(arg1);
-							arg0.getClickedBlock().setType(Material.GRASS);
-							arg0.getClickedBlock().getWorld().playEffect(arg0.getClickedBlock().getLocation(), Effect.STEP_SOUND, Material.GRASS);
-						}
-						return true;
-					}
-					else return false;
-				}
-			});
-
-			new PlantsListener(this);
-			new FoodListener(this);
-
-			items.put("WHEAT_SEEDS", new ItemStack(Material.WHEAT_SEEDS));
-			items.put("PUMPKIN_SEEDS", new ItemStack(Material.PUMPKIN_SEEDS));
-			items.put("MELON_SEEDS", new ItemStack(Material.MELON_SEEDS));
-			items.put("OAK_SAPLING", new ItemStack(Material.OAK_SAPLING));
-			items.put("SPRUCE_SAPLING", new ItemStack(Material.SPRUCE_SAPLING));
-			items.put("BIRCH_SAPLING", new ItemStack(Material.BIRCH_SAPLING));
-			items.put("JUNGLE_SAPLING", new ItemStack(Material.JUNGLE_SAPLING));
-			items.put("ACACIA_SAPLING", new ItemStack(Material.ACACIA_SAPLING));
-			items.put("DARK_OAK_SAPLING", new ItemStack(Material.DARK_OAK_SAPLING));
-			items.put("GRASS_SEEDS", grass_seeds);
-
-			Iterator<String> iterator = items.keySet().iterator();
-			while (iterator.hasNext()) {
-				String key = iterator.next();
-				cfg.setDefaultValue("grass-drops." + key, true);
-				if (!cfg.getBoolean("grass-drops." + key)) iterator.remove();
+				return false;
 			}
-			cfg.save();
+		});
+
+		new SlimefunItem(category_main, grass_seeds, "GRASS_SEEDS", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+				new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
+				.register(false, new ItemInteractionHandler() {
+					@Override
+					public boolean onRightClick(ItemUseEvent e, Player p, ItemStack i) {
+						if (SlimefunManager.isItemSimiliar(i, grass_seeds, true)) {
+							Block b = e.getClickedBlock();
+							if (b != null && b.getType() == Material.DIRT) {
+								PlayerInventory.consumeItemInHand(p);
+								b.setType(Material.GRASS_BLOCK);
+								if (b.getRelative(BlockFace.UP).getType() == Material.AIR || b.getRelative(BlockFace.UP).getType() == Material.CAVE_AIR)
+									b.getRelative(BlockFace.UP).setType(Material.GRASS);
+								b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, Material.GRASS);
+							}
+							return true;
+						}
+						else return false;
+					}
+				});
+
+		new PlantsListener(this);
+		new FoodListener(this);
+
+		items.put("WHEAT_SEEDS", new ItemStack(Material.WHEAT_SEEDS));
+		items.put("PUMPKIN_SEEDS", new ItemStack(Material.PUMPKIN_SEEDS));
+		items.put("MELON_SEEDS", new ItemStack(Material.MELON_SEEDS));
+		items.put("OAK_SAPLING", new ItemStack(Material.OAK_SAPLING));
+		items.put("SPRUCE_SAPLING", new ItemStack(Material.SPRUCE_SAPLING));
+		items.put("BIRCH_SAPLING", new ItemStack(Material.BIRCH_SAPLING));
+		items.put("JUNGLE_SAPLING", new ItemStack(Material.JUNGLE_SAPLING));
+		items.put("ACACIA_SAPLING", new ItemStack(Material.ACACIA_SAPLING));
+		items.put("DARK_OAK_SAPLING", new ItemStack(Material.DARK_OAK_SAPLING));
+		items.put("GRASS_SEEDS", grass_seeds);
+
+		Iterator<String> iterator = items.keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			cfg.setDefaultValue("grass-drops." + key, true);
+			if (!cfg.getBoolean("grass-drops." + key)) iterator.remove();
 		}
+		cfg.save();
 	}
 
 	private void registerDishes() {
@@ -270,7 +270,7 @@ public class ExoticGarden extends JavaPlugin {
 		3)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r馬鈴薯沙拉", 0, new String[] {"", "&7&o回復 &b&o" + "6.0" + " &7&o飽食度"}), "POTATO_SALAD",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r馬鈴薯沙拉", new String[] {"", "&7&o回復 &b&o" + "6.0" + " &7&o飽食度"}), "POTATO_SALAD",
 		new ItemStack[] {new ItemStack(Material.BAKED_POTATO), getItem("MAYO"), new ItemStack(Material.BOWL), null, null, null, null, null, null},
 		6)
 		.register();
@@ -285,22 +285,22 @@ public class ExoticGarden extends JavaPlugin {
 		11)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r蛋沙拉", 0, new String[] {"", "&7&o回復 &b&o" + "6.0" + " &7&o飽食度"}), "EGG_SALAD",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r蛋沙拉",  new String[] {"", "&7&o回復 &b&o" + "6.0" + " &7&o飽食度"}), "EGG_SALAD",
 		new ItemStack[] {new ItemStack(Material.EGG), getItem("MAYO"), new ItemStack(Material.BOWL), null, null, null, null, null, null},
 		6)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&4番茄湯", 0, new String[] {"", "&7&o回復 &b&o" + "5.5" + " &7&o飽食度"}), "TOMATO_SOUP",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&4番茄湯", new String[] {"", "&7&o回復 &b&o" + "5.5" + " &7&o飽食度"}), "TOMATO_SOUP",
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("TOMATO"), null, null, null, null, null, null, null},
 		5)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&c草莓田園沙拉", 0, new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "STRAWBERRY_SALAD",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&c草莓田園沙拉",  new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "STRAWBERRY_SALAD",
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("STRAWBERRY"), null, null, null, null, null, null, null},
 		4)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&c葡萄田園沙拉", 0, new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "GRAPE_SALAD",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&c葡萄田園沙拉",  new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "GRAPE_SALAD",
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("GRAPE"), null, null, null, null, null, null, null},
 		4)
 		.register();
@@ -330,7 +330,7 @@ public class ExoticGarden extends JavaPlugin {
 		18)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.COOKIE, "&6餅乾", 0, new String[] {"", "&7&o回復 &b&o" + "2.0" + " &7&o飽食度"}), "BISCUIT",
+		new CustomFood(category_food, new CustomItem(Material.COOKIE, "&6餅乾",  new String[] {"", "&7&o回復 &b&o" + "2.0" + " &7&o飽食度"}), "BISCUIT",
 		new ItemStack[] {SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, null, null, null, null, null, null, null}, 
 		2)
 		.register();
@@ -345,12 +345,12 @@ public class ExoticGarden extends JavaPlugin {
 		18)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.GOLDEN_CARROT, "&6玉米棒", 0, new String[] {"", "&7&o回復 &b&o" + "4.5" + " &7&o飽食度"}), "CORN_ON_THE_COB",
+		new CustomFood(category_food, new CustomItem(Material.GOLDEN_CARROT, "&6玉米棒", new String[] {"", "&7&o回復 &b&o" + "4.5" + " &7&o飽食度"}), "CORN_ON_THE_COB",
 		new ItemStack[] {SlimefunItems.BUTTER, getItem("CORN"), null, null, null, null, null, null, null},
 		3)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r奶油玉米", 0, new String[] {"", "&7&o回復 &b&o" + "4.0" + " &7&o飽食度"}), "CREAMED_CORN",
+		new CustomFood(category_food, new CustomItem(Material.MUSHROOM_STEW, "&r奶油玉米",  new String[] {"", "&7&o回復 &b&o" + "4.0" + " &7&o飽食度"}), "CREAMED_CORN",
 		new ItemStack[] {SlimefunItems.HEAVY_CREAM, getItem("CORN"), new ItemStack(Material.BOWL), null, null, null, null, null, null},
 		2)
 		.register();
@@ -434,7 +434,7 @@ public class ExoticGarden extends JavaPlugin {
 		18)
 		.register();
 
-		new CustomFood(category_food, new CustomItem(Material.COOKIE, "&c果醬餅", 0, new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "JAMMY_DODGER",
+		new CustomFood(category_food, new CustomItem(Material.COOKIE, "&c果醬餅", new String[] {"", "&7&o回復 &b&o" + "5.0" + " &7&o飽食度"}), "JAMMY_DODGER",
 		new ItemStack[] {null, getItem("BISCUIT"), null, null, getItem("RASPBERRY_JUICE"), null, null, getItem("BISCUIT"), null}, 
 		8)
 		.register();
@@ -649,12 +649,12 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(fruitName + "_SAPLING", new CustomItem(Material.OAK_SAPLING, color + name + "樹苗", 0));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "樹苗", 0), fruitName + "_SAPLING", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草", 1)),
-		new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "樹苗"), fruitName + "_SAPLING", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
 		try {
-			new EGPlant(category_main, new CustomItem(getSkull(material, texture), color + name), fruitName, new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的樹獲得", 0)), true,
+			new EGPlant(category_main, new CustomItem(getSkull(material, texture), color + name), fruitName, new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的樹獲得")), true,
 			new ItemStack[] {null, null, null, null, getItem(fruitName + "_SAPLING"), null, null, null, null})
 			.register();
 		} catch (Exception e1) {
@@ -686,13 +686,13 @@ public class ExoticGarden extends JavaPlugin {
 		Berry berry = new Berry(id.toUpperCase(), type, data);
 		berries.add(berry);
 
-		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "苗", 0));
+		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "苗"));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗", 0), id.toUpperCase() + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草", 1)),
-		new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase() + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
-		new EGPlant(category_main, new CustomItem(getSkull(Material.NETHER_WART, data.getTexture()), color + name), id.toUpperCase(), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的植物獲得", 0)), true,
+		new EGPlant(category_main, new CustomItem(getSkull(Material.NETHER_WART, data.getTexture()), color + name), id.toUpperCase(), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的植物獲得")), true,
 		new ItemStack[] {null, null, null, null, getItem(id.toUpperCase() + "_BUSH"), null, null, null, null})
 		.register();
 
@@ -737,13 +737,13 @@ public class ExoticGarden extends JavaPlugin {
 		Berry berry = new Berry(id.toUpperCase().replace(" ", "_"), type, data);
 		berries.add(berry);
 
-		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "叢", 0));
+		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "叢"));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗", 0), id.toUpperCase().replace(" ", "_") + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草", 1)),
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase().replace(" ", "_") + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
 		new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
 		.register();
 
-		new EGPlant(category_main, new CustomItem(getSkull(material, data.getTexture()), color + name), id.toUpperCase().replace(" ", "_"), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的果叢獲得", 0)), true,
+		new EGPlant(category_main, new CustomItem(getSkull(material, data.getTexture()), color + name), id.toUpperCase().replace(" ", "_"), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7藉由特定的果叢獲得")), true,
 		new ItemStack[] {null, null, null, null, getItem(id.toUpperCase().replace(" ", "_") + "_BUSH"), null, null, null, null})
 		.register();
 	}
@@ -754,7 +754,7 @@ public class ExoticGarden extends JavaPlugin {
 		Berry berry = new Berry(essence, id.toUpperCase() + "_ESSENCE", PlantType.ORE_PLANT, new PlantData(skull));
 		berries.add(berry);
 
-		new SlimefunItem(category_magic, new CustomItem(Material.OAK_SAPLING, "&r" + name + "苗", 0), id.toUpperCase().replace(" ", "_") + "_PLANT", RecipeType.ENHANCED_CRAFTING_TABLE,
+		new SlimefunItem(category_magic, new CustomItem(Material.OAK_SAPLING, "&r" + name + "苗"), id.toUpperCase().replace(" ", "_") + "_PLANT", RecipeType.ENHANCED_CRAFTING_TABLE,
 		recipe)
 		.register();
 
