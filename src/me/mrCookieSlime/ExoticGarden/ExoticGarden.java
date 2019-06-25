@@ -737,7 +737,7 @@ public class ExoticGarden extends JavaPlugin {
 		Berry berry = new Berry(id.toUpperCase().replace(" ", "_"), type, data);
 		berries.add(berry);
 
-		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "叢"));
+		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "苗"));
 
 		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase().replace(" ", "_") + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
 		new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
