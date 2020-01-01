@@ -2,6 +2,7 @@ package me.mrCookieSlime.ExoticGarden;
 
 import java.util.List;
 
+import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,15 +26,15 @@ import me.mrCookieSlime.Slimefun.api.Slimefun;
 
 public class Kitchen extends MultiBlockMachine {
 	
-	private RecipeType recipeT = new RecipeType(new CustomItem(Material.CAULDRON, "&eKitchen", "", "&a&oThis item should be made", "&a&oin the Kitchen"), "KITCHEN");
+	private RecipeType recipeT = new RecipeType(new CustomItem(Material.CAULDRON, "&e廚房", "", "&a&o此物品需要", "&a&o在廚房中製作"), "KITCHEN");
 	private ExoticGarden plugin;
 	
 	public Kitchen(ExoticGarden plugin) {
 		super(
-			Categories.MACHINES_1, new CustomItem(Material.CAULDRON, "&eKitchen", new String[] {"", "&a&oYou can make a bunch of different yummies here!", "&a&oThe result goes in the Furnace output slot"}), "KITCHEN",
-			new ItemStack[] {new CustomItem(Material.BRICK_STAIRS, "&oBrick Stairs (upside down)"), new CustomItem(Material.BRICK_STAIRS, "&oBrick Stairs (upside down)"), new ItemStack(Material.BRICKS), new ItemStack(Material.STONE_PRESSURE_PLATE), new ItemStack(Material.IRON_TRAPDOOR), new ItemStack(Material.BOOKSHELF), new ItemStack(Material.FURNACE), new ItemStack(Material.DISPENSER), new ItemStack(Material.CRAFTING_TABLE)},
-			new ItemStack[0], 
-			Material.IRON_TRAPDOOR
+				Categories.MACHINES_1, new SlimefunItemStack("KITCHEN", Material.CAULDRON, "&e廚房", "", "&a&o你可以製作好多美味的食物!", "&a&o將食材放入廚房內的熔爐"), "KITCHEN",
+				new ItemStack[] {new CustomItem(Material.BRICK_STAIRS, "&o磚頭階梯(倒著放)"), new CustomItem(Material.BRICK_STAIRS, "&o磚頭階梯(倒著放)"), new ItemStack(Material.BRICKS), new ItemStack(Material.STONE_PRESSURE_PLATE), new ItemStack(Material.IRON_TRAPDOOR), new ItemStack(Material.BOOKSHELF), new ItemStack(Material.FURNACE), new ItemStack(Material.DISPENSER), new ItemStack(Material.CRAFTING_TABLE)},
+				new ItemStack[0],
+				BlockFace.SELF
 		);
 		
 		this.plugin = plugin;
