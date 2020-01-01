@@ -19,6 +19,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+  			<id>CodeMC</id>
+  			<url>https://repo.codemc.org/repository/maven-public</url>
+		</repository>
     </repositories>
     <build>
         <!--Maintain existing structure (as much as possible)-->
@@ -52,22 +56,23 @@
         </resources>
     </build>
     <dependencies>
-        <!--Bukkit API-->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.14.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+           	<groupId>org.bukkit</groupId>
+           	<artifactId>bukkit</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
+  			<scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.TheBusyBiscuit</groupId>
-            <artifactId>CS-CoreLib</artifactId>
-            <version>4d33f14f4e</version>
-        </dependency>
+	        <groupId>com.github.TheBusyBiscuit</groupId>
+	        <artifactId>CS-CoreLib</artifactId>
+	        <version>45909a0324</version>
+  			<scope>provided</scope>
+	    </dependency>
         <dependency>
-            <groupId>com.github.TheBusyBiscuit</groupId>
-            <artifactId>Slimefun4</artifactId>
-            <version>8f173ea76c</version>
-        </dependency>
+	    	<groupId>com.github.TheBusyBiscuit</groupId>
+	   		<artifactId>Slimefun4</artifactId>
+	   		<version>d18409bfc4</version>
+  			<scope>provided</scope>
+	    </dependency>
     </dependencies>
 </project>
