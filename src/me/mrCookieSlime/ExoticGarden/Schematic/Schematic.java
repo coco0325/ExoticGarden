@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,8 +13,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.inventory.InventoryHolder;
 
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
-import me.mrCookieSlime.ExoticGarden.ExoticGarden;
 import me.mrCookieSlime.ExoticGarden.Tree;
 import me.mrCookieSlime.ExoticGarden.Schematic.org.jnbt.ByteArrayTag;
 import me.mrCookieSlime.ExoticGarden.Schematic.org.jnbt.CompoundTag;
@@ -51,15 +49,15 @@ public class Schematic {
 	private short[] blocks;
 	private byte[] data;
 	private short width;
-	private short length;
+	private short lenght;
 	private short height;
 	private String name;
 
-	public Schematic(String name, short[] blocks, byte[] data, short width, short length, short height) {
+	public Schematic(String name, short[] blocks, byte[] data, short width, short lenght, short height) {
 		this.blocks = blocks;
 		this.data = data;
 		this.width = width;
-		this.length = length;
+		this.lenght = lenght;
 		this.height = height;
 		this.name = name;
 	}
@@ -90,10 +88,10 @@ public class Schematic {
 	}
 
 	/**
-	* @return the length
+	* @return the lenght
 	*/
-	public short getLength() {
-		return length;
+	public short getLenght() {
+		return lenght;
 	}
 
 	/**
@@ -104,21 +102,16 @@ public class Schematic {
 	}
 
 	public static void pasteSchematic(Location loc, Tree tree) {
-		Schematic schematic;
-
+		Schematic schematic = null;
 		try {
 			schematic = tree.getSchematic();
-		} catch (IOException e) {
-			ExoticGarden.instance.getLogger().log(Level.WARNING, "Could not paste Schematic for Tree: "
-                + tree.getFruitID() + "_TREE (" + e.getClass().getSimpleName() + ')', e);
-			return;
-		}
+		} catch (IOException e) {}
 
 		BlockFace[] bf = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
 		short[] blocks = schematic.getBlocks();
 		byte[] blockData = schematic.getData();
 
-		short length = schematic.getLength();
+		short length = schematic.getLenght();
 		short width = schematic.getWidth();
 		short height = schematic.getHeight();
 
@@ -127,27 +120,28 @@ public class Schematic {
 				for (int z = 0; z < length; ++z) {
 					int index = y * width * length + z * width + x;
 					Block block = new Location(loc.getWorld(), x + loc.getX() - length / 2, y + loc.getY(), z + loc.getZ() - width / 2).getBlock();
-					
 					if (block.getType() == Material.AIR || block.getType() == Material.CAVE_AIR || !block.getType().isSolid()) {
-						if (parseId(blocks[index], blockData[index]) != null && !(block.getState() instanceof InventoryHolder)) {
-							if (blocks[index] != 0) {
-								block.setType(parseId(blocks[index], blockData[index]));
-							}
-							if (org.bukkit.Tag.LEAVES.isTagged(parseId(blocks[index], blockData[index]))) {
-								if (ThreadLocalRandom.current().nextInt(100) < 13) BlockStorage.store(block, tree.getItem());
-							}
-							else if (parseId(blocks[index], blockData[index]) == Material.PLAYER_HEAD) {
-								Rotatable s = (Rotatable) block.getBlockData();
-								s.setRotation(bf[new Random().nextInt(bf.length)]);
-								block.setBlockData(s);
-
-								try {
-									CustomSkull.setSkull(block, tree.getTexture());
-								} catch (Exception e) {
-									e.printStackTrace();
+						if (parseId(blocks[index], blockData[index]) != null) {
+							if (!(block.getState() instanceof InventoryHolder)) {
+								if (blocks[index] != 0) {
+									block.setType(parseId(blocks[index], blockData[index]));
 								}
+								if (org.bukkit.Tag.LEAVES.isTagged(parseId(blocks[index], blockData[index]))) {
+									if (CSCoreLib.randomizer().nextInt(100) < 12) BlockStorage.store(block, tree.getItem());
+								}
+								else if (parseId(blocks[index], blockData[index]) == Material.PLAYER_HEAD) {
+									Rotatable s = (Rotatable) block.getBlockData();
+									s.setRotation(bf[new Random().nextInt(bf.length)]);
+									block.setBlockData(s);
 
-								BlockStorage.store(block, tree.getFruit());
+									try {
+										CustomSkull.setSkull(block, tree.getTexture());
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+
+									BlockStorage.store(block, tree.getFruit());
+								}
 							}
 						}
 					}
@@ -193,18 +187,19 @@ public class Schematic {
 	}
 
 	public static Schematic loadSchematic(File file) throws IOException {
-		Map<String, Tag> schematic = null;
-		
-		try (NBTInputStream stream = new NBTInputStream(new FileInputStream(file))) {
-			CompoundTag schematicTag = (CompoundTag) stream.readTag();
-			if (!schematicTag.getName().equals("Schematic")) {
-				throw new IllegalArgumentException("Tag \"Schematic\" does not exist or is not first");
-			}
-			
-			schematic = schematicTag.getValue();
-			if (!schematic.containsKey("Blocks")) {
-				throw new IllegalArgumentException("Schematic file is missing a \"Blocks\" tag");
-			}
+		FileInputStream stream = new FileInputStream(file);
+		NBTInputStream nbtStream = new NBTInputStream(stream);
+
+		CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
+		if (!schematicTag.getName().equals("Schematic")) {
+			nbtStream.close();
+			throw new IllegalArgumentException("Tag \"Schematic\" does not exist or is not first");
+		}
+
+		Map<String, Tag> schematic = schematicTag.getValue();
+		if (!schematic.containsKey("Blocks")) {
+			nbtStream.close();
+			throw new IllegalArgumentException("Schematic file is missing a \"Blocks\" tag");
 		}
 
 		short width = getChildTag(schematic, "Width", ShortTag.class).getValue();
@@ -227,17 +222,16 @@ public class Schematic {
 		for (int index = 0; index < blockId.length; index++) {
 			if ((index >> 1) >= addId.length) { // No corresponding AddBlocks index
 				blocks[index] = (short) (blockId[index] & 0xFF);
-			} 
-			else {
+			} else {
 				if ((index & 1) == 0) {
 					blocks[index] = (short) (((addId[index >> 1] & 0x0F) << 8) + (blockId[index] & 0xFF));
-				} 
-				else {
+				} else {
 					blocks[index] = (short) (((addId[index >> 1] & 0xF0) << 4) + (blockId[index] & 0xFF));
 				}
 			}
 		}
-		
+
+		nbtStream.close();
 		return new Schematic(file.getName().replace(".schematic", ""), blocks, blockData, width, length, height);
 	}
 
