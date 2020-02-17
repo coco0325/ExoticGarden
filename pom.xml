@@ -12,8 +12,8 @@
     </properties>
     <repositories>
         <repository>
-            <id>spigot-repo</id> 
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url> 
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -57,17 +57,17 @@
     </build>
     <dependencies>
         <dependency>
-           	<groupId>org.bukkit</groupId>
-           	<artifactId>bukkit</artifactId>
-            <version>1.14.4-R0.1-SNAPSHOT</version>
-  			<scope>provided</scope>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-	        <groupId>com.github.TheBusyBiscuit</groupId>
-	        <artifactId>CS-CoreLib</artifactId>
-	        <version>45909a0324</version>
-  			<scope>provided</scope>
-	    </dependency>
+            <groupId>com.github.TheBusyBiscuit</groupId>
+            <artifactId>CS-CoreLib</artifactId>
+            <version>8081bb4fe4</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>me.mrCookieSlime</groupId>
             <artifactId>Slimefun4</artifactId>

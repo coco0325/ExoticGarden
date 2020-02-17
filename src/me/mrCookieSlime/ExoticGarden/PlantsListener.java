@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
+import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -261,6 +263,7 @@ public class PlantsListener implements Listener {
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK || e.getPlayer().isSneaking()) return;
+		if(SlimefunManager.isItemSimilar(e.getPlayer().getInventory().getItemInMainHand(), SlimefunItems.WRENCH, false)) return;
 		if (SlimefunPlugin.getProtectionManager().hasPermission(e.getPlayer(), e.getClickedBlock().getLocation(), ProtectableAction.BREAK_BLOCK)) {
 			ItemStack item = ExoticGarden.harvestPlant(e.getClickedBlock());
 			if (item != null ) {
