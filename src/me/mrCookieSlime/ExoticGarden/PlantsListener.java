@@ -58,7 +58,7 @@ public class PlantsListener implements Listener {
 			if (!e.getLocation().getChunk().isLoaded()) e.getLocation().getWorld().loadChunk(e.getLocation().getChunk());
 			for (Tree tree : ExoticGarden.getTrees()) {
 				if (item.getID().equalsIgnoreCase(tree.getSapling())) {
-					BlockStorage.retrieve(e.getLocation().getBlock());
+					BlockStorage.clearBlockInfo(e.getLocation());
 					Schematic.pasteSchematic(e.getLocation(), tree);
 					return;
 				}
@@ -121,6 +121,7 @@ public class PlantsListener implements Listener {
 							break;
 						}
 					}
+					BlockStorage._integrated_removeBlockInfo(e.getLocation(), false);
 					BlockStorage.store(e.getLocation().getBlock(), berry.getItem());
 					e.getWorld().playEffect(e.getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
 					break;
