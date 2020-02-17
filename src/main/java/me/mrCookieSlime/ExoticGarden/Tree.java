@@ -13,22 +13,27 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 
 public class Tree {
 
-	private String sapling;
-	private String schematic;
-	private String texture;
-	private String fruit;
-	private List<Material> soils;
+	private final String sapling;
+	private final String texture;
+	private final String fruit;
+	private final List<Material> soils;
+	
+	private Schematic schematic;
 
-	public Tree(String name, String fruit, String texture, Material... soil) {
-		this.sapling = name + "_SAPLING";
-		this.schematic = name + "_TREE";
+	public Tree(String fruit, String texture, Material... soil) {
+		this.sapling = fruit + "_SAPLING";
 		this.texture = texture;
 		this.fruit = fruit;
 		this.soils = Arrays.asList(soil);
 	}
 
 	public Schematic getSchematic() throws IOException {
-	    return Schematic.loadSchematic(new File("plugins/ExoticGarden/schematics/" + schematic + ".schematic"));
+	    if (schematic == null) {
+	    	schematic = Schematic.loadSchematic(new File(ExoticGarden.getInstance().getSchematicsFolder(),
+				fruit + "_TREE.schematic"));
+	    }
+		
+		return schematic;
 	}
 
 	public ItemStack getItem() {
