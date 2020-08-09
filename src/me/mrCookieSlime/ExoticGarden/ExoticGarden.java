@@ -19,7 +19,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomPotion;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
 import me.mrCookieSlime.ExoticGarden.items.Crook;
 import me.mrCookieSlime.ExoticGarden.items.GrassSeeds;
@@ -31,11 +30,7 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.HandledBlock;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.Juice;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
-import me.mrCookieSlime.Slimefun.bstats.bukkit.Metrics;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.BukkitUpdater;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.Updater;
 
 public class ExoticGarden extends JavaPlugin {
 	
@@ -62,24 +57,6 @@ public class ExoticGarden extends JavaPlugin {
 		
     	instance = this;
     	cfg = new Config(this);
-		
-		// Setting up bStats
-		new Metrics(this);
-
-		// Setting up the Auto-Updater
-		Updater updater;
-
-		if (!getDescription().getVersion().startsWith("DEV - ")) {
-			// We are using an official build, use the BukkitDev Updater
-			updater = new BukkitUpdater(this, getFile(), 88425);
-		}
-		else {
-			// If we are using a development build, we want to switch to our custom 
-			updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/ExoticGarden/master");
-		}
-		
-		// Only run the Updater if it has not been disabled
-		if (cfg.getBoolean("options.auto-update")) updater.start();
 
 		skullitems = cfg.getBoolean("options.item-heads");
 
@@ -178,7 +155,7 @@ public class ExoticGarden extends JavaPlugin {
 		new ItemStack[] {new ItemStack(Material.STICK), new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null})
 		.register(false);
 
-		new GrassSeeds(category_main, grass_seeds, "GRASS_SEEDS", new RecipeType(new CustomItem(Material.GRASS, "&7破壞雜草")),
+		new GrassSeeds(category_main, grass_seeds, "GRASS_SEEDS", new RecipeType(new CustomItem(Material.GRASS, "&7用手破壞雜草")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register(false);
 
@@ -705,7 +682,7 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(fruitName + "_SAPLING", new CustomItem(Material.OAK_SAPLING, color + name + "樹苗", 0));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "樹苗"), fruitName + "_SAPLING", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "樹苗"), fruitName + "_SAPLING", new RecipeType(new CustomItem(Material.GRASS, "&7用手破壞草")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
@@ -744,7 +721,7 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "苗"));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase() + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase() + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7用手破壞草")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
@@ -795,7 +772,7 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(id.toUpperCase() + "_BUSH", new CustomItem(Material.OAK_SAPLING, color + name + "苗"));
 
-		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase().replace(" ", "_") + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7破壞草")),
+		new SlimefunItem(category_main, new CustomItem(Material.OAK_SAPLING, color + name + "苗"), id.toUpperCase().replace(" ", "_") + "_BUSH", new RecipeType(new CustomItem(Material.GRASS, "&7用手破壞草")),
 		new ItemStack[] {null, null, null, null, new CustomItem(Material.GRASS, 1), null, null, null, null})
 		.register();
 
